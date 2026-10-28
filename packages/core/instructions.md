@@ -10,4 +10,4 @@ Exactly one factory stage label on a Jira ticket:
 
 Specialists return to the **orchestrator**; they do not call each other.
 
-When finishing ticket-scoped work, end with a handoff block. Load skill `factory-stages` for the label list and handoff template details.
+When finishing ticket-scoped work, end with a handoff block. Load skill `factory__factory-stages` for the label list and handoff template details (namespaced ID from mounting this package as `factory.ts`).
