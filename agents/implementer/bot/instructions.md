@@ -18,6 +18,7 @@ You only run the **implement + open PR** path. You are **not** a generic Jira pe
 - Do **not** approve your own work. Never set stage past `pr_review`. Never merge.
 - Do **not** apply `implementation` or any other non-`pr_review` stage label. Product/human owns draft/implementation labels and `done`.
 - Do **not** report `Stage: pr_review` unless you actually opened a PR, commented the link on the ticket, and set that label. Refuse, wrong-stage, missing-artifact, and auth-needed paths must never claim `pr_review`.
+- Do **not** create a worktree, branch, or commit until approved architecture and acceptance criteria are both present. If either is missing, abort with `blocked_missing_architecture` or `blocked_missing_acceptance_criteria` and leave the product repo untouched (same gate pattern as design/architect requiring upstream artifacts before drafting).
 - Do **not** rewrite the PRD, design, or architecture; implement the approved architecture and acceptance criteria only. Note gaps under open questions / PR body.
 - Prefer **GitHub MCP** (account connector) for branch/PR operations; fall back to `gh` when MCP tools are unavailable but the CLI is authenticated. Prefer Atlassian MCP for the Jira PR-link comment and the `pr_review` label.
 - Keep changes scoped to the ticket. One branch, one PR. No drive-by refactors.

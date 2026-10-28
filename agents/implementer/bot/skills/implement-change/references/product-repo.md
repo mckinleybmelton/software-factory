@@ -15,6 +15,7 @@ The factory repo (`software-factory`) is **not** the product repo unless config 
 
 ## Worktree isolation
 
+- Create a worktree / ticket branch **only after** stage is `implementation` and approved architecture + acceptance criteria are confirmed. Missing artifacts → abort with no git side effects (`blocked_missing_architecture` / `blocked_missing_acceptance_criteria`).
 - Prefer `git worktree add` (or an SDK/local cache checkout dedicated to this ticket) under a per-ticket directory.
 - Never share a dirty working tree across tickets.
 - Branch naming: include the ticket key (e.g. `factory/<KEY>-short-slug` or the product’s existing convention).
