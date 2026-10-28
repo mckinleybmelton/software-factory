@@ -27,7 +27,7 @@ export default defineEval({
         "- Toggle in settings switches light/dark theme for the session.",
         "### Open questions",
         "- None.",
-        "Task: Draft the design (user flows, screens/interfaces), post to Jira if available, set label to design_review, and hand back.",
+        "Task: Stage is already design_draft. Draft the design (user flows, screens/interfaces), post to Jira if available, set label to design_review, and hand back. Do not apply design_draft.",
         "If Jira tools are unavailable, include the full design in your reply and note auth is required.",
         "Do not approve.",
       ].join(" "),
