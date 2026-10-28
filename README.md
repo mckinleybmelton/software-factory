@@ -41,9 +41,11 @@ Talk to the **orchestrator** only. Examples:
 
 The orchestrator asks the `product` peer, then stops at **`prd_review`** for a human gate.
 
+After PRD approve, the orchestrator asks **product** to apply `design_draft`, verifies that label, then asks design. Design alone writes `design_review`.
+
 > Ticket ASF-12 is in `design_draft` (PRD approved). Continue.
 
-The orchestrator asks the `design` peer, then stops at **`design_review`** for a human gate.
+The orchestrator asks the `design` peer (only when stage is already `design_draft`), then stops at **`design_review`** for a human gate. Stage lookups and label applies go to **product**, not design.
 
 ```bash
 npx --yes "@grok/agent-sdk@0.4.0" chat \
