@@ -143,3 +143,4 @@ Orchestrator smoke asserts routing intent toward product / stop at PRD review (f
 - Peers: `bot/mcp-connections/*.ts` with `defineConnection({ agent: "<slug>" })`
 - Skills: `bot/skills/*/SKILL.md` (and flat `.md` where enough)
 - Package: `@grok/agent-sdk` — Node, not Bun
+- Knowledge layers (thin `AGENTS.md` / instructions → on-demand skills → `references/` → MCP): see Project doc [`docs/knowledge-layer.md`](/cursor/stores/self/docs/knowledge-layer.md).

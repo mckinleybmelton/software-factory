@@ -1,5 +1,5 @@
 ---
-description: Use when opening the product-repo PR for a completed implementation and moving the stage to pr_review only after the PR exists.
+description: Use when a completed implementation is ready to open as a product-repo PR and advance the ticket to pr_review.
 ---
 
 # Open PR

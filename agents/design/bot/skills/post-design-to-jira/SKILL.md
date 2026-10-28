@@ -1,5 +1,5 @@
 ---
-description: Use when posting a completed design artifact to a Jira ticket and moving the stage to design_review.
+description: Use when posting a completed design to Jira and advancing the ticket to design_review.
 ---
 
 # Post design to Jira

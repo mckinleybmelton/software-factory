@@ -1,5 +1,5 @@
 ---
-description: Use when reviewing a product-repo PR for a factory ticket already at pr_review, before posting the review packet to Jira.
+description: Use when reviewing a product-repo PR for a factory ticket already at pr_review, before posting the packet.
 ---
 
 # Review PR

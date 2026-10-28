@@ -1,5 +1,5 @@
 ---
-description: Use when implementing an approved architecture for a factory ticket already at implementation, before opening a PR.
+description: Use when implementing approved architecture for a factory ticket already at implementation, before opening a PR.
 ---
 
 # Implement change

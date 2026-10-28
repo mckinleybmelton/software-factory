@@ -1,5 +1,5 @@
 ---
-description: Use when routing a Jira ticket through factory stages — pick stage, peer, and next action.
+description: Use when deciding the next factory action for a Jira ticket (stage, peer, and next step).
 ---
 
 # Route a ticket

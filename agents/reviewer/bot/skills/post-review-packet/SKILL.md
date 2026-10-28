@@ -1,5 +1,5 @@
 ---
-description: Use when posting a completed PR review packet to a Jira ticket at pr_review without changing stage labels.
+description: Use when posting a completed PR review packet to a Jira ticket already at pr_review.
 ---
 
 # Post review packet
