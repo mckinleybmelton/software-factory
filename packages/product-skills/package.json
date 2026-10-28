@@ -1,0 +1,23 @@
+{
+  "name": "@software-factory/product-skills",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Product agent skills: draft PRD, post to Jira, manage backlog.",
+  "exports": {
+    ".": "./extension.ts"
+  },
+  "files": [
+    "extension.ts",
+    "skills/**/*"
+  ],
+  "dependencies": {
+    "@grok/agent-sdk": "^0.4.0"
+  },
+  "peerDependencies": {
+    "@grok/agent-sdk": "^0.4.0"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

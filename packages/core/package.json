@@ -1,0 +1,25 @@
+{
+  "name": "@software-factory/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Factory stage labels, handoff conventions, and shared reference templates.",
+  "exports": {
+    ".": "./extension.ts"
+  },
+  "files": [
+    "extension.ts",
+    "instructions.md",
+    "skills/**/*",
+    "references/**/*"
+  ],
+  "dependencies": {
+    "@grok/agent-sdk": "^0.4.0"
+  },
+  "peerDependencies": {
+    "@grok/agent-sdk": "^0.4.0"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

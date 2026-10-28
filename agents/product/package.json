@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@grok/agent-sdk": "^0.4.0",
+    "@software-factory/core": "file:../../packages/core",
+    "@software-factory/product-skills": "file:../../packages/product-skills",
     "zod": "^4.6.5"
   },
   "devDependencies": {

@@ -6,11 +6,16 @@
   "engines": {
     "node": ">=22.13.0"
   },
+  "workspaces": [
+    "packages/*",
+    "agents/*",
+    "examples/*"
+  ],
   "scripts": {
-    "validate": "npx --yes @grok/agent-sdk@0.4.0 validate --dir ./agents",
+    "validate": "npx --yes @grok/agent-sdk@0.4.0 validate --dir ./agents && npx --yes @grok/agent-sdk@0.4.0 validate --dir ./examples/app-host",
     "serve": "npx --yes @grok/agent-sdk@0.4.0 serve --dir ./agents --dev",
     "dev": "npx --yes @grok/agent-sdk@0.4.0 serve --dir ./agents --dev",
     "info": "npx --yes @grok/agent-sdk@0.4.0 info --dir ./agents --json",
-    "check": "npm run check --prefix agents/orchestrator && npm run check --prefix agents/product && npm run check --prefix agents/design && npm run check --prefix agents/architect && npm run check --prefix agents/implementer && npm run check --prefix agents/reviewer"
+    "check": "npm run check --prefix agents/orchestrator && npm run check --prefix agents/product && npm run check --prefix agents/design && npm run check --prefix agents/architect && npm run check --prefix agents/implementer && npm run check --prefix agents/reviewer && npm run check --prefix examples/app-host"
   }
 }
