@@ -6,7 +6,7 @@ Cursor talks to an **orchestrator** Agent SDK peer. The orchestrator routes Jira
 agents/
   orchestrator/   # entry peer (real)
   product/        # PRD draft + Jira post + backlog triage (real)
-  design/         # stub
+  design/         # UX draft + Jira post (real)
   architect/      # stub
   implementer/    # stub
   reviewer/       # stub
@@ -29,17 +29,21 @@ npx --yes "@grok/agent-sdk@0.4.0" serve --dir ./agents --dev
 # Orchestrator:     http://127.0.0.1:3000/orchestrator/playground
 
 # Local bring-up without a Cursor credential (validate stays green either way).
-# Product's Atlassian connection is optional; Jira tools stay unavailable until you sign in.
+# Product and design Atlassian connections are optional; Jira tools stay unavailable until you sign in.
 npx --yes "@grok/agent-sdk@0.4.0" serve --dir ./agents --dev \
   --allow-anonymous --allow-anonymous-cursor-account-mcp
 ```
 
 
-Talk to the **orchestrator** only. Example:
+Talk to the **orchestrator** only. Examples:
 
 > Ticket ASF-12 is in `prd_draft`. Route it through the factory.
 
 The orchestrator asks the `product` peer, then stops at **`prd_review`** for a human gate.
+
+> Ticket ASF-12 is in `design_draft` (PRD approved). Continue.
+
+The orchestrator asks the `design` peer, then stops at **`design_review`** for a human gate.
 
 ```bash
 npx --yes "@grok/agent-sdk@0.4.0" chat \
@@ -64,17 +68,17 @@ Exactly one factory stage label on the ticket:
 
 - Submit: draft → matching review  
 - Approve: review → next draft (or `done`)  
-- Reject: review → same draft (with notes)
+- Reject / changes_requested: review → same draft (with notes)
 
 ## Jira / Atlassian auth
 
-Product uses `defineConnection({ cursorAccount: true, servers: ["Atlassian"], optional: true })` in `agents/product/bot/mcp-connections/account.ts`.
+Product and design use `defineConnection({ cursorAccount: true, servers: ["Atlassian"], optional: true })` in each agent's `bot/mcp-connections/account.ts`.
 
 1. Connect **Atlassian** in the Cursor dashboard (MCP connectors).
 2. Sign the serve host in (`agent-sdk login` or `CURSOR_API_KEY`).
 3. For hosted deploys, connect Atlassian under Deployed Agents connectors.
 
-Without Atlassian auth, product still drafts the PRD in its reply and reports that a live Jira post needs OAuth. `optional: true` keeps **validate** green when the connector is missing. A normal `serve` with this connection needs a Cursor credential; for unsigned local playground use `--allow-anonymous --allow-anonymous-cursor-account-mcp` (trusted networks only).
+Without Atlassian auth, product still drafts the PRD (and design still drafts UX) in the reply and reports that a live Jira post needs OAuth. `optional: true` keeps **validate** green when the connector is missing. A normal `serve` with these connections needs a Cursor credential; for unsigned local playground use `--allow-anonymous --allow-anonymous-cursor-account-mcp` (trusted networks only).
 
 ### Product skills
 
@@ -86,11 +90,17 @@ Without Atlassian auth, product still drafts the PRD in its reply and reports th
 
 Backlog scope defaults: `JIRA_PROJECT_KEY` / `FACTORY_JIRA_PROJECT` (optional `JIRA_FILTER_ID` / `JIRA_BOARD_ID`). Status → bucket map and stale days: see `agents/product/bot/skills/manage-backlog/references/status-buckets.md` (`FACTORY_BACKLOG_STATUS_MAP`, `FACTORY_BACKLOG_STALE_DAYS`).
 
+### Design skills
+
+| Skill | Role |
+| --- | --- |
+| `draft-design` | User flows + screens/interfaces from the approved PRD |
+| `post-design-to-jira` | Comment design + set stage label `design_review` |
+
 ## What is stubbed
 
 | Peer | This slice |
 | --- | --- |
-| design | Replies `not implemented` |
 | architect | Replies `not implemented` |
 | implementer | Replies `not implemented` (no GitHub MCP yet) |
 | reviewer | Replies `not implemented` |
@@ -104,7 +114,7 @@ npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/orchestrator --list
 npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/orchestrator
 ```
 
-Orchestrator smoke asserts routing intent toward product / stop at PRD review (fixture ticket text; no live Jira). Needs a Cursor credential. Skip running evals if unsigned; scaffolding remains under each agent's `evals/`.
+Orchestrator smoke asserts routing intent toward product / stop at PRD review (fixture ticket text; no live Jira). Design smoke asserts flows/screens + handoff at `design_review`. Needs a Cursor credential. Skip running evals if unsigned; scaffolding remains under each agent's `evals/`.
 
 ## Layout notes
 
