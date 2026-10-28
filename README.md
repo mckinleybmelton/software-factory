@@ -7,9 +7,9 @@ agents/
   orchestrator/   # entry peer (real)
   product/        # PRD draft + Jira post + backlog triage (real)
   design/         # UX draft + Jira post (real)
-  architect/      # architecture + dependency graph + Jira post (real)
-  implementer/    # stub
-  reviewer/       # stub
+  architect/      # architecture draft + Jira post (real)
+  implementer/    # product-repo implement + open PR (real)
+  reviewer/       # PR review packet on Jira (real)
 ```
 
 Requires **Node 22.13+** (never Bun).
@@ -20,7 +20,7 @@ Requires **Node 22.13+** (never Bun).
 # Install each agent once (or after lockfile changes)
 for d in agents/*/; do (cd "$d" && npm install); done
 
-# Preferred: sign in so model turns and Atlassian MCP work
+# Preferred: sign in so model turns and Atlassian/GitHub MCP work
 npx --yes "@grok/agent-sdk@0.4.0" login
 # or: export CURSOR_API_KEY=...
 
@@ -29,7 +29,7 @@ npx --yes "@grok/agent-sdk@0.4.0" serve --dir ./agents --dev
 # Orchestrator:     http://127.0.0.1:3000/orchestrator/playground
 
 # Local bring-up without a Cursor credential (validate stays green either way).
-# Product, design, and architect Atlassian connections are optional; Jira tools stay unavailable until you sign in.
+# Specialist Atlassian/GitHub connections are optional; tools stay unavailable until you sign in.
 npx --yes "@grok/agent-sdk@0.4.0" serve --dir ./agents --dev \
   --allow-anonymous --allow-anonymous-cursor-account-mcp
 ```
@@ -41,17 +41,9 @@ Talk to the **orchestrator** only. Examples:
 
 The orchestrator asks the `product` peer, then stops at **`prd_review`** for a human gate.
 
-After PRD approve, the orchestrator asks **product** to apply `design_draft`, verifies that label, then asks design. Design alone writes `design_review`.
-
 > Ticket ASF-12 is in `design_draft` (PRD approved). Continue.
 
-The orchestrator asks the `design` peer (only when stage is already `design_draft`), then stops at **`design_review`** for a human gate. Stage lookups and label applies go to **product**, not design.
-
-After design approve, the orchestrator asks **product** to apply `architecture_draft`, verifies that label, then asks architect. Architect alone writes `architecture_review`.
-
-> Ticket ASF-12 is in `architecture_draft` (design approved). Continue.
-
-The orchestrator asks the `architect` peer (only when stage is already `architecture_draft`), then stops at **`architecture_review`** for a human gate. Stage lookups and label applies go to **product**, not architect.
+The orchestrator asks the `design` peer, then stops at **`design_review`** for a human gate.
 
 ```bash
 npx --yes "@grok/agent-sdk@0.4.0" chat \
@@ -74,19 +66,22 @@ Exactly one factory stage label on the ticket:
 
 `prd_draft` → `prd_review` → `design_draft` → `design_review` → `architecture_draft` → `architecture_review` → `implementation` → `pr_review` → `done`
 
-- Submit: draft → matching review  
-- Approve: review → next draft (or `done`)  
-- Reject / changes_requested: review → same draft (with notes)
+- Submit: draft → matching review (implementer sets `pr_review` only after a PR exists)
+- Approve: review → next draft / `implementation` / `done`
+- Reject / changes_requested: review → same draft (or `implementation` for PR reject) with notes
 
-## Jira / Atlassian auth
+## Jira / Atlassian / GitHub auth
 
-Product, design, and architect use `defineConnection({ cursorAccount: true, servers: ["Atlassian"], optional: true })` in each agent's `bot/mcp-connections/account.ts`.
+Product, design, and architect use `defineConnection({ cursorAccount: true, servers: ["Atlassian"], optional: true })`.
 
-1. Connect **Atlassian** in the Cursor dashboard (MCP connectors).
+Implementer and reviewer add GitHub (`servers: ["GitHub"]`) plus Atlassian for ticket comments. Implementer alone writes `pr_review` after the PR exists; reviewer posts the review packet and does not change stage labels.
+
+1. Connect **Atlassian** and **GitHub** in the Cursor dashboard (MCP connectors).
 2. Sign the serve host in (`agent-sdk login` or `CURSOR_API_KEY`).
-3. For hosted deploys, connect Atlassian under Deployed Agents connectors.
+3. For hosted deploys, connect those servers under Deployed Agents connectors.
+4. Set product-repo config for the implementer: `FACTORY_PRODUCT_REPO` / `PRODUCT_REPO` (`owner/name`), optional `FACTORY_PRODUCT_REPO_PATH`, optional `FACTORY_PRODUCT_DEFAULT_BRANCH` (default `main`).
 
-Without Atlassian auth, product still drafts the PRD (design still drafts UX; architect still drafts architecture) in the reply and reports that a live Jira post needs OAuth. `optional: true` keeps **validate** green when the connector is missing. A normal `serve` with these connections needs a Cursor credential; for unsigned local playground use `--allow-anonymous --allow-anonymous-cursor-account-mcp` (trusted networks only).
+Without connector auth, specialists still draft artifacts in the reply and report that a live post needs OAuth. `optional: true` keeps **validate** green when a connector is missing. A normal `serve` with these connections needs a Cursor credential; for unsigned local playground use `--allow-anonymous --allow-anonymous-cursor-account-mcp` (trusted networks only).
 
 ### Product skills
 
@@ -109,17 +104,30 @@ Backlog scope defaults: `JIRA_PROJECT_KEY` / `FACTORY_JIRA_PROJECT` (optional `J
 
 | Skill | Role |
 | --- | --- |
-| `draft-architecture` | Components, boundaries, and dependency graph from approved PRD + design |
+| `draft-architecture` | Components, boundaries, dependency graph from approved PRD + design |
 | `post-architecture-to-jira` | Comment architecture + set stage label `architecture_review` |
 
-## What is stubbed
+### Implementer skills
 
-| Peer | This slice |
+| Skill | Role |
 | --- | --- |
-| implementer | Replies `not implemented` (no GitHub MCP yet) |
-| reviewer | Replies `not implemented` |
+| `implement-change` | Code + tests in the configured product repo (worktree isolation) |
+| `open-pr` | Open one PR (GitHub MCP or `gh`), comment PR link on Jira, set `pr_review` only after the PR exists; reuse existing PR for jira-complete recovery |
 
-Orchestrator still has peer connections to every specialist so routing stays testable.
+Implementer never approves or merges. Prefer GitHub MCP; fall back to `gh` when needed.
+
+### Reviewer skills
+
+| Skill | Role |
+| --- | --- |
+| `review-pr` | Read PR diff/CI vs approved PRD + architecture |
+| `post-review-packet` | Comment matches / gaps / PR link on Jira (no label write) |
+
+Reviewer never writes product code and never merges. Human still approves at the PR gate.
+
+## Race-safe routing (verify-before-ask)
+
+Product (or human) applies draft/implementation/`done` labels after a gate decision. Orchestrator **verifies** the stage before asking the specialist. Specialists alone write their review labels (`design_review`, `architecture_review`, `pr_review`) after the artifact (or PR) exists. Generic Jira stage reads/label applies stay with **product**.
 
 ## Evals
 
@@ -128,10 +136,11 @@ npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/orchestrator --list
 npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/orchestrator
 ```
 
-Orchestrator smoke asserts routing intent toward product / stop at PRD review (fixture ticket text; no live Jira). Design smoke asserts flows/screens + handoff at `design_review`. Architect smoke asserts components/dependency graph + handoff at `architecture_review`. Needs a Cursor credential. Skip running evals if unsigned; scaffolding remains under each agent's `evals/`.
+Orchestrator smoke asserts routing intent toward product / stop at PRD review (fixture ticket text; no live Jira). Design / architect / implementer / reviewer smokes assert artifact handoffs without self-approval. Needs a Cursor credential. Skip running evals if unsigned; scaffolding remains under each agent's `evals/`.
 
 ## Layout notes
 
 - Peers: `bot/mcp-connections/*.ts` with `defineConnection({ agent: "<slug>" })`
 - Skills: `bot/skills/*/SKILL.md` (and flat `.md` where enough)
 - Package: `@grok/agent-sdk` — Node, not Bun
+- Knowledge layers (thin `AGENTS.md` / instructions → on-demand skills → `references/` → MCP): see Project doc [`docs/knowledge-layer.md`](/cursor/stores/self/docs/knowledge-layer.md).

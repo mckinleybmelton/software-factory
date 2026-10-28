@@ -1,5 +1,5 @@
 ---
-description: Use when drafting a PRD for a factory ticket before posting to Jira.
+description: Use when drafting a PRD for a factory ticket, before posting to Jira.
 ---
 
 # Draft a PRD

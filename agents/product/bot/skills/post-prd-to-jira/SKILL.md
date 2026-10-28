@@ -1,5 +1,5 @@
 ---
-description: Use when posting a completed PRD to a Jira ticket and moving the stage to prd_review.
+description: Use when posting a completed PRD to Jira and advancing the ticket to prd_review.
 ---
 
 # Post PRD to Jira

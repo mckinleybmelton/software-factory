@@ -1,5 +1,5 @@
 ---
-description: Use when the user asks what is in flight, what to start next, to triage the board, or to move tickets that are stuck or mislabeled.
+description: Use when asked what is in flight, what to start next, to triage the board, or to move stuck or mislabeled tickets.
 ---
 
 # Manage backlog

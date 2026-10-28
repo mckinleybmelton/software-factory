@@ -1,5 +1,5 @@
 ---
-description: Use when posting a completed architecture artifact to a Jira ticket and moving the stage to architecture_review.
+description: Use when posting a completed architecture to Jira and advancing the ticket to architecture_review.
 ---
 
 # Post architecture to Jira

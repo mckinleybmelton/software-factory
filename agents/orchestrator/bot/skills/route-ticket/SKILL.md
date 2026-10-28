@@ -1,5 +1,5 @@
 ---
-description: Use when routing a Jira ticket through factory stages — pick stage, peer, and next action.
+description: Use when deciding the next factory action for a Jira ticket (stage, peer, and next step).
 ---
 
 # Route a ticket
@@ -7,7 +7,7 @@ description: Use when routing a Jira ticket through factory stages — pick stag
 ## Inputs
 
 - Ticket key (e.g. `ASF-12`)
-- Current factory stage label on the ticket (if unknown, ask the human or have **`product`** read Jira — **never** ask `design` or `architect` for stage lookup or label updates)
+- Current factory stage label on the ticket (if unknown, ask the human or have **`product`** read Jira — **never** ask `design`, `architect`, `implementer`, or `reviewer` for stage lookup or generic label updates)
 - Human intent: start, continue, approve, reject, status
 
 ## Stage → peer
@@ -20,31 +20,36 @@ description: Use when routing a Jira ticket through factory stages — pick stag
 | `design_review` | _(none)_ | **Human gate** — stop; wait for approve/reject |
 | `architecture_draft` | `architect` | Ask architect to draft architecture and post to Jira (**only** after stage is confirmed `architecture_draft`) |
 | `architecture_review` | _(none)_ | **Human gate** — stop; wait for approve/reject |
-| `implementation` | `implementer` | Ask implementer peer (stub) |
-| `pr_review` | `reviewer` | Ask reviewer peer (stub) |
+| `implementation` | `implementer` | Ask implementer to implement + open PR (**only** after stage is confirmed `implementation`) |
+| `pr_review` | `reviewer` | Ask reviewer to post review packet (**only** after stage is confirmed `pr_review`) |
 | `done` | _(none)_ | Report complete; no further routing |
 
 ## Jira ownership
 
 | Need | Who |
 | --- | --- |
-| Stage lookup / label apply (including post-gate `design_draft`, `architecture_draft`, return-to-draft) | **`product`** or human |
+| Stage lookup / label apply (including post-gate drafts, return-to-draft, `done`) | **`product`** or human |
 | UX draft + post → `design_review` | **`design`** only, and only when stage is already `design_draft` |
 | Architecture draft + post → `architecture_review` | **`architect`** only, and only when stage is already `architecture_draft` |
+| Implement + open PR → comment PR link + `pr_review` | **`implementer`** only, and only when stage is already `implementation` (sets `pr_review` **after** PR exists) |
+| PR review packet comment (no label write) | **`reviewer`** only, and only when stage is already `pr_review` |
 
-Do **not** send generic Jira reads or label updates to `design` or `architect`. They are not catch-all Jira peers.
+Do **not** send generic Jira reads or label updates to `design`, `architect`, `implementer`, or `reviewer`. They are not catch-all Jira peers.
 
 ## Procedure
 
 1. Resolve the ticket key and current stage label (human or **product** Jira read).
-2. If stage is a `*_review` gate, do **not** ask a specialist to approve. Summarize and wait for the human.
+2. If stage is a `*_review` gate, do **not** ask a specialist to approve. For `prd_review` / `design_review` / `architecture_review`, summarize and wait for the human. For `pr_review`, ask **`reviewer`** only after stage is verified `pr_review`, then stop for the human merge decision after the packet is posted (or if reviewer already posted, wait for the human).
 3. If stage is a draft/implementation stage, ask the matching peer with scoped context: ticket key, stage, relevant notes, rejection feedback if any.
 4. Before asking `design`, confirm the ticket stage is already `design_draft`. If a gate decision just advanced labels, wait until product (or human) confirms the label landed — do not race a deferred `design_draft` write against design's `design_review` post.
 5. Before asking `architect`, confirm the ticket stage is already `architecture_draft`. Same verify-before-ask rule as design — do not race a deferred `architecture_draft` write against architect's `architecture_review` post.
-6. After the peer returns, report status:
+6. Before asking `implementer`, confirm the ticket stage is already `implementation`. Same verify-before-ask rule — do not race a deferred `implementation` write against implementer's `pr_review` post.
+7. Before asking `reviewer`, confirm the ticket stage is already `pr_review` (which implies a PR should exist — implementer only sets that label after opening the PR). Do not ask reviewer from `implementation`.
+8. After the peer returns, report status:
    - Product success (PRD post) → expect `prd_review` and **stop** for human review.
    - Design success → expect `design_review` and **stop** for human review.
    - Architect success → expect `architecture_review` and **stop** for human review.
+   - Implementer success → expect `pr_review` and **stop** for human PR review (after asking reviewer when stage is verified, or ask reviewer next then stop).
    - Design **abort** / `blocked_*` → do **not** treat as `design_review`. Handle **only** by the specific status below (do not collapse them into one path):
      - `blocked_wrong_stage`: have **product** read the actual stage **now**. Route **only** from that live stage (human `*_review` → stop; draft/implementation → matching peer). Do **not** apply `design_draft` because an earlier turn once approved PRD/design — a stale authorize must not rewind `architecture_*` / later stages. Resume a pending label apply **only** inside the same in-progress `record-gate-decision` flow when the live stage is still that gate's "from" label (e.g. still `prd_review` after this approve, or still `design_review` after this reject); then verify before asking design.
      - `blocked_wrong_ask`: ask **product** (or human) for the Jira read/label work; **no** stage change; **do not** re-ask design.
@@ -55,7 +60,19 @@ Do **not** send generic Jira reads or label updates to `design` or `architect`. 
      - `blocked_wrong_ask`: ask **product** (or human) for the Jira read/label work; **no** stage change; **do not** re-ask architect.
      - `blocked_missing_prd` / `blocked_missing_design`: **no** label rewrite. If live stage is `architecture_draft`, supply the approved PRD and/or design (or have product fetch them), verify stage is still `architecture_draft`, then re-ask architect. If live stage is anything else, route from that stage instead of re-asking architect.
    - Architect `architecture_ready_jira_auth_required` → stage remains `architecture_draft`; do not open the human architecture gate until a real post sets `architecture_review`.
-7. On reject (via `record-gate-decision`), product/human returns stage to the draft label; **verify** that draft label, then re-ask that peer with the rejection notes. Never race a deferred draft-label write against a specialist post.
+   - Implementer **abort** / `blocked_*` → do **not** treat as `pr_review`. Handle **only** by the specific status below:
+     - `blocked_wrong_stage`: have **product** read the actual stage **now**. Route **only** from that live stage. Do **not** apply `implementation` from a stale earlier approve — that must not rewind `pr_review` / `done`. Resume a pending label apply **only** inside the same in-progress `record-gate-decision` flow when the live stage is still that gate's "from" label (e.g. still `architecture_review` after this approve, or still `pr_review` after this reject); then verify before asking implementer.
+     - `blocked_wrong_ask`: ask **product** (or human) for the Jira read/label work; **no** stage change; **do not** re-ask implementer.
+     - `blocked_missing_architecture` / `blocked_missing_acceptance_criteria` / `blocked_missing_product_repo`: **no** label rewrite. If live stage is `implementation`, supply the missing inputs (or have product fetch artifacts / confirm repo config), verify stage is still `implementation`, then re-ask implementer. If live stage is anything else, route from that stage instead of re-asking implementer.
+   - Implementer `implementation_ready_*_auth_required` → stage remains `implementation`; do not open the human PR gate / ask reviewer until a real PR exists and `pr_review` is set. Handle by status:
+     - `implementation_ready_jira_auth_required` (PR URL present): tell the **human** to authorize Atlassian/Jira for the **implementer**. Once auth works, re-ask **implementer** with the **jira-complete** ask (reuse existing PR; comment + set `pr_review` only — **not** full re-implement, **not** a new PR). **Never** ask product to set `pr_review`.
+     - `implementation_ready_github_auth_required` / `implementation_ready_auth_required` (no usable PR yet): tell the human to authorize GitHub (and Jira if needed) for implementer; then re-ask implementer for the normal implement + open-PR path (or open-pr only if the branch already exists).
+   - Reviewer **abort** / `blocked_*` → do **not** treat as human approval. Handle by status:
+     - `blocked_wrong_stage`: product reads live stage; route from that stage only.
+     - `blocked_wrong_ask`: ask product/human for Jira work; do not re-ask reviewer for that work.
+     - `blocked_missing_pr` / `blocked_missing_architecture` / `blocked_missing_acceptance_criteria`: if live stage is `pr_review`, supply the missing PR/artifacts, verify stage, re-ask reviewer; else route from live stage.
+   - Reviewer `pr_review_ready_jira_auth_required` → stage remains `pr_review`; human gate can still proceed once the packet is available in-chat, but prefer a real Jira post when auth returns.
+9. On reject (via `record-gate-decision`), product/human returns stage to the draft/implementation label; **verify** that label, then re-ask that peer with the rejection notes. Never race a deferred draft-label write against a specialist post.
 
 ## Peer ask shapes
 
@@ -100,3 +117,32 @@ Task: Stage is already architecture_draft. Read the approved PRD and design. Dra
 ```
 
 Include the approved PRD and design bodies (or pointers to the Jira comments) and any prior `architecture_review` rejection notes.
+
+When asking `implementer`, include at least:
+
+```text
+Ticket: <KEY>
+Stage: implementation
+Task: Stage is already implementation. Read the approved architecture and acceptance criteria. Implement in the configured product repo (worktree isolation), open one PR, comment the PR link on Jira, set label to pr_review only after the PR exists, and hand back. Do not approve. Do not merge. Do not apply implementation.
+```
+
+Include the approved architecture, acceptance criteria, product-repo config if known, and any prior `pr_review` rejection notes.
+
+When asking `implementer` to **complete Jira after auth** (reuse existing PR; recovery from `implementation_ready_jira_auth_required`), include at least:
+
+```text
+Ticket: <KEY>
+Stage: implementation
+PR: <url>
+Task: Stage is already implementation. PR already exists at <url>. Do not open a new PR. Do not re-implement. Comment the PR link on Jira and set label to pr_review only (jira-complete / reuse-existing-PR path). Hand back. Do not approve. Do not merge.
+```
+
+When asking `reviewer`, include at least:
+
+```text
+Ticket: <KEY>
+Stage: pr_review
+Task: Stage is already pr_review. Read the PR diff and CI if available, plus approved PRD and architecture. Post a review packet on the ticket (matches, gaps, PR link). Do not change stage labels. Do not write product code. Do not approve. Do not merge.
+```
+
+Include the PR URL, approved PRD/architecture pointers, and any human notes.
