@@ -37,9 +37,9 @@ Read `references/status-buckets.md` for project/filter resolution, status → bu
    - Age: days since last update (and created age if never updated meaningfully)
 
 5. **Propose next steps** (always; do not execute moves here)
-   - **Start:** highest-value yet-to-start items that are unblocked and have a clear factory stage (often `prd_draft` or the next draft stage).
+   - **Start:** highest-value yet-to-start items that are unblocked, have a clear factory stage (often `prd_draft` or the next draft stage), and do **not** have a `*_review` factory stage label (`prd_review`, `design_review`, `architecture_review`, `pr_review`). Review-gated tickets belong only under Human gate.
    - **Unblock:** in-progress / in-review items with blockers or missing owners.
-   - **Human gate:** anything on a `*_review` factory stage — waiting on human approve/reject; do not approve.
+   - **Human gate:** anything on a `*_review` factory stage — waiting on human approve/reject; do not approve. Never also list these under Start, even if status is `yet_to_start` and unblocked.
    - **Stale:** past the stale threshold in the reference (default: no update in 7+ days while open).
 
 6. **Move / transition only when authorized**

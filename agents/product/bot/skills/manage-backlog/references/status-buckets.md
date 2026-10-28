@@ -43,8 +43,8 @@ Exactly one (when present) among:
 
 `prd_draft`, `prd_review`, `design_draft`, `design_review`, `architecture_draft`, `architecture_review`, `implementation`, `pr_review`, `done`
 
-- `*_review` → human gate (propose wait; do not approve).
-- Draft / `implementation` needing work → hand off to orchestrator for a stage run.
+- `*_review` (`prd_review`, `design_review`, `architecture_review`, `pr_review`) → human gate only (propose wait; do not approve). Exclude from **Start** next-steps even when status is `yet_to_start` and unblocked.
+- Draft / `implementation` needing work → eligible for **Start** (when unblocked) or hand off to orchestrator for a stage run.
 - Label `done` usually aligns with bucket `finished`.
 
 ## Stale threshold
