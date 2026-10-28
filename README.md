@@ -5,7 +5,7 @@ Cursor talks to an **orchestrator** Agent SDK peer. The orchestrator routes Jira
 ```text
 agents/
   orchestrator/   # entry peer (real)
-  product/        # PRD draft + Jira post (real)
+  product/        # PRD draft + Jira post + backlog triage (real)
   design/         # stub
   architect/      # stub
   implementer/    # stub
@@ -75,6 +75,16 @@ Product uses `defineConnection({ cursorAccount: true, servers: ["Atlassian"], op
 3. For hosted deploys, connect Atlassian under Deployed Agents connectors.
 
 Without Atlassian auth, product still drafts the PRD in its reply and reports that a live Jira post needs OAuth. `optional: true` keeps **validate** green when the connector is missing. A normal `serve` with this connection needs a Cursor credential; for unsigned local playground use `--allow-anonymous --allow-anonymous-cursor-account-mcp` (trusted networks only).
+
+### Product skills
+
+| Skill | Role |
+| --- | --- |
+| `draft-prd` | Fill the PRD contract for a ticket |
+| `post-prd-to-jira` | Comment PRD + set stage label `prd_review` |
+| `manage-backlog` | Board triage (buckets, next steps); moves only when asked |
+
+Backlog scope defaults: `JIRA_PROJECT_KEY` / `FACTORY_JIRA_PROJECT` (optional `JIRA_FILTER_ID` / `JIRA_BOARD_ID`). Status → bucket map and stale days: see `agents/product/bot/skills/manage-backlog/references/status-buckets.md` (`FACTORY_BACKLOG_STATUS_MAP`, `FACTORY_BACKLOG_STALE_DAYS`).
 
 ## What is stubbed
 
