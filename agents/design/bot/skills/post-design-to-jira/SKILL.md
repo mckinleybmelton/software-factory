@@ -11,8 +11,9 @@ You are the **only** writer of `design_review`. You never set `design_draft` (pr
 ## Procedure
 
 1. Confirm the design passes `draft-design/references/design-contract.md`.
-2. Read the ticket (key from the orchestrator message). Confirm current factory stage is already **`design_draft`**. If it is not (missing, still `prd_review`, already `design_review`, or another stage), **do not** change labels; hand back with the draft in the reply and say product/human must set `design_draft` first.
-3. Confirm a PRD is present (comment or description); if missing, say so and still hand back with the draft in the reply (do not advance labels without a PRD unless the orchestrator explicitly said the PRD is in the message only and Jira lacks it — still do not invent `design_draft`).
+2. Read the ticket (key from the orchestrator message). Confirm current factory stage is already **`design_draft`**.
+   - If it is **not** (missing, still `prd_review`, already `design_review`, or another stage): **abort** — do **not** add a comment, do **not** change labels, do **not** claim `design_review`. Hand back with status `blocked_wrong_stage`, report the actual stage found, and say product/human must set `design_draft` first. Stop here.
+3. Confirm a PRD is present (comment or description). If missing and the orchestrator did not supply the approved PRD in the message: **abort** — no comment, no label change; hand back with status `blocked_missing_prd` and the current stage (`design_draft`). Stop here.
 4. Add a comment with the rendered design markdown (`## Design` … sections).
 5. Update factory stage labels **only** in this transition:
    - Remove `design_draft` (and any other factory stage labels listed below).
@@ -24,12 +25,27 @@ You are the **only** writer of `design_review`. You never set `design_draft` (pr
 
 `prd_draft`, `prd_review`, `design_draft`, `design_review`, `architecture_draft`, `architecture_review`, `implementation`, `pr_review`, `done`
 
-Keep exactly one of these on the ticket after your update.
+Keep exactly one of these on the ticket after a successful update.
 
-## Reply after post
+## Reply after successful post
 
 ```text
 Posted design to <KEY>
 Labels: design_review
-Handoff: orchestrator — awaiting human design review
+Handoff: orchestrator
+Ticket: <KEY>
+Stage: design_review
+Status: awaiting human design review
+```
+
+## Reply on abort (wrong stage / missing PRD)
+
+```text
+Aborted post to <KEY>
+Reason: blocked_wrong_stage|blocked_missing_prd
+Stage: <actual stage or unknown>
+Handoff: orchestrator
+Ticket: <KEY>
+Stage: <actual stage or unknown>
+Status: blocked — not design_review; product/human must fix stage before design runs
 ```

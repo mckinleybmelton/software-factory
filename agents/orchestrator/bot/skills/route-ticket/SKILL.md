@@ -42,6 +42,7 @@ Do **not** send generic Jira reads or label updates to `design`. Design is not a
 5. After the peer returns, report status:
    - Product success (PRD post) → expect `prd_review` and **stop** for human review.
    - Design success → expect `design_review` and **stop** for human review.
+   - Design **abort** / `blocked_*` (wrong stage, wrong ask, missing PRD) → do **not** treat as `design_review`. Fix stage via product/human, then re-ask design.
 6. On reject (via `record-gate-decision`), product/human returns stage to the draft label; **verify** that draft label, then re-ask that peer with the rejection notes.
 
 ## Peer ask shapes
