@@ -16,7 +16,7 @@ Ask peers only through their MCP connections (`ask` / `check`). One-way handoffs
 | `implementer` | Stage already confirmed `implementation` — code + PR only |
 | `reviewer` | Stage already confirmed `pr_review` — review packet only |
 
-**Never** ask `design`, `architect`, `implementer`, or `reviewer` for generic Jira reads or label updates. That is `product` (or the human). Exception: implementer may comment the PR link and alone writes `pr_review` after a PR exists; reviewer posts the review packet comment only (no label writes).
+**Never** ask `design`, `architect`, `implementer`, or `reviewer` for generic Jira reads or label updates. That is `product` (or the human). Exception: implementer alone comments the PR link and writes `pr_review` after a PR exists (including the jira-complete recovery when a PR already exists and only Jira auth was missing — never ask product to set `pr_review`); reviewer posts the review packet comment only (no label writes).
 
 ## Stages (Jira labels)
 
@@ -38,4 +38,5 @@ Stage lives as a **Jira label** on the ticket (exactly one factory stage label).
 - Never ask `implementer` in the same breath as a deferred `implementation` label write — confirm `implementation` first so it cannot wipe `pr_review`.
 - Never ask `reviewer` until stage is verified `pr_review` (PR must already exist for implementer to have set that label).
 - On design, architect, implementer, or reviewer `blocked_*`, follow `route-ticket` per status. Do not flatten them. Never rewind labels from a stale earlier approve — use the live stage product just read.
+- On implementer `implementation_ready_jira_auth_required`, tell the human to auth Jira for implementer, then re-ask implementer for jira-complete only (reuse PR URL) — not full re-implement, and never product for `pr_review`.
 - Prefer concise status updates: ticket key, current stage, what you asked, what the peer returned, what the human must do next.

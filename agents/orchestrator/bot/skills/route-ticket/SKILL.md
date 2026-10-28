@@ -64,7 +64,9 @@ Do **not** send generic Jira reads or label updates to `design`, `architect`, `i
      - `blocked_wrong_stage`: have **product** read the actual stage **now**. Route **only** from that live stage. Do **not** apply `implementation` from a stale earlier approve — that must not rewind `pr_review` / `done`. Resume a pending label apply **only** inside the same in-progress `record-gate-decision` flow when the live stage is still that gate's "from" label (e.g. still `architecture_review` after this approve, or still `pr_review` after this reject); then verify before asking implementer.
      - `blocked_wrong_ask`: ask **product** (or human) for the Jira read/label work; **no** stage change; **do not** re-ask implementer.
      - `blocked_missing_architecture` / `blocked_missing_acceptance_criteria` / `blocked_missing_product_repo`: **no** label rewrite. If live stage is `implementation`, supply the missing inputs (or have product fetch artifacts / confirm repo config), verify stage is still `implementation`, then re-ask implementer. If live stage is anything else, route from that stage instead of re-asking implementer.
-   - Implementer `implementation_ready_*_auth_required` → stage remains `implementation`; do not open the human PR gate / ask reviewer until a real PR exists and `pr_review` is set.
+   - Implementer `implementation_ready_*_auth_required` → stage remains `implementation`; do not open the human PR gate / ask reviewer until a real PR exists and `pr_review` is set. Handle by status:
+     - `implementation_ready_jira_auth_required` (PR URL present): tell the **human** to authorize Atlassian/Jira for the **implementer**. Once auth works, re-ask **implementer** with the **jira-complete** ask (reuse existing PR; comment + set `pr_review` only — **not** full re-implement, **not** a new PR). **Never** ask product to set `pr_review`.
+     - `implementation_ready_github_auth_required` / `implementation_ready_auth_required` (no usable PR yet): tell the human to authorize GitHub (and Jira if needed) for implementer; then re-ask implementer for the normal implement + open-PR path (or open-pr only if the branch already exists).
    - Reviewer **abort** / `blocked_*` → do **not** treat as human approval. Handle by status:
      - `blocked_wrong_stage`: product reads live stage; route from that stage only.
      - `blocked_wrong_ask`: ask product/human for Jira work; do not re-ask reviewer for that work.
@@ -125,6 +127,15 @@ Task: Stage is already implementation. Read the approved architecture and accept
 ```
 
 Include the approved architecture, acceptance criteria, product-repo config if known, and any prior `pr_review` rejection notes.
+
+When asking `implementer` to **complete Jira after auth** (reuse existing PR; recovery from `implementation_ready_jira_auth_required`), include at least:
+
+```text
+Ticket: <KEY>
+Stage: implementation
+PR: <url>
+Task: Stage is already implementation. PR already exists at <url>. Do not open a new PR. Do not re-implement. Comment the PR link on Jira and set label to pr_review only (jira-complete / reuse-existing-PR path). Hand back. Do not approve. Do not merge.
+```
 
 When asking `reviewer`, include at least:
 

@@ -25,7 +25,7 @@ description: Use when a human approves or rejects a factory review gate (PRD, de
 - You have **no** Jira. Stage label applies and stage lookups go to **`product`** (or the human). **Never** ask `design`, `architect`, `implementer`, or `reviewer` to apply generic labels or look up stage (except implementer's sole `pr_review` write after a PR exists, and reviewer's review-packet comment with no label write).
 - `design` only runs when stage is already confirmed `design_draft`, and is the **only** peer that writes `design_review` (via its post skill after drafting UX).
 - `architect` only runs when stage is already confirmed `architecture_draft`, and is the **only** peer that writes `architecture_review` (via its post skill after drafting architecture).
-- `implementer` only runs when stage is already confirmed `implementation`, and is the **only** peer that writes `pr_review` (via `open-pr` **after** the PR exists).
+- `implementer` only runs when stage is already confirmed `implementation`, and is the **only** peer that writes `pr_review` (via `open-pr` **after** the PR exists, including the jira-complete reuse path). Never ask product to set `pr_review`.
 - `reviewer` only runs when stage is already confirmed `pr_review`, posts the review packet, and **never** writes `done` or `implementation`.
 
 ## Procedure

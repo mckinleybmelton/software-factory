@@ -7,5 +7,5 @@ Factory specialist peer. Served prompt: `bot/instructions.md`. Skills load on de
 - Peer slug: `product`
 - Skills: `draft-prd`, `post-prd-to-jira`, `manage-backlog`
 - Owns factory stage lookups and label applies (draft/`done` transitions after human gates)
-- Does not write `design_review`, `architecture_review`, or `pr_review`
+- Does not write `design_review`, `architecture_review`, or `pr_review` (including after PR-open / Jira-auth recovery — that is implementer only)
 - Stage labels and peer ownership: see root `AGENTS.md`

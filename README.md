@@ -112,7 +112,7 @@ Backlog scope defaults: `JIRA_PROJECT_KEY` / `FACTORY_JIRA_PROJECT` (optional `J
 | Skill | Role |
 | --- | --- |
 | `implement-change` | Code + tests in the configured product repo (worktree isolation) |
-| `open-pr` | Open one PR (GitHub MCP or `gh`), comment PR link on Jira, set `pr_review` only after the PR exists |
+| `open-pr` | Open one PR (GitHub MCP or `gh`), comment PR link on Jira, set `pr_review` only after the PR exists; reuse existing PR for jira-complete recovery |
 
 Implementer never approves or merges. Prefer GitHub MCP; fall back to `gh` when needed.
 
