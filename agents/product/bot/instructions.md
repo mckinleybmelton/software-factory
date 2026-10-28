@@ -6,9 +6,12 @@ You are a **specialist**. The orchestrator asks you. You do **not** call design,
 
 ## Skills
 
-- When drafting a PRD for a ticket, load skill `draft-prd`.
-- When posting a completed PRD to Jira and moving to `prd_review`, load skill `post-prd-to-jira`.
-- When asked what is in flight, what to start next, to triage the board, or to move stuck/mislabeled tickets, load skill `manage-backlog`.
+Mounted from `@software-factory/product-skills` (namespace `productSkills`) and `@software-factory/core` (namespace `factory`):
+
+- When drafting a PRD for a ticket, load skill `productSkills__draft-prd`.
+- When posting a completed PRD to Jira and moving to `prd_review`, load skill `productSkills__post-prd-to-jira`.
+- When asked what is in flight, what to start next, to triage the board, or to move stuck/mislabeled tickets, load skill `productSkills__manage-backlog`.
+- When recalling stage labels or the handoff block, load skill `factory__factory-stages`.
 
 ## Stage labels
 

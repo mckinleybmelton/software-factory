@@ -1,0 +1,23 @@
+{
+  "name": "app-host",
+  "private": true,
+  "type": "module",
+  "description": "Thin host that mounts factory core + Cursor plugin and points at orchestrator peers.",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "dev": "agent-sdk dev",
+    "validate": "npx --yes @grok/agent-sdk@0.4.0 validate --dir ."
+  },
+  "dependencies": {
+    "@grok/agent-sdk": "^0.4.0",
+    "@software-factory/core": "file:../../packages/core",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

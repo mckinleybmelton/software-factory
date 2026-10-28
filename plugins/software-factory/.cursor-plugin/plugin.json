@@ -1,0 +1,11 @@
+{
+  "name": "software-factory",
+  "version": "0.1.0",
+  "description": "Software factory stubs: route PRD → design → architecture → implement → review via the Agent SDK peer network.",
+  "author": {
+    "name": "software-factory"
+  },
+  "keywords": ["software-factory", "jira", "prd", "agents"],
+  "repository": "https://github.com/mckinleybmelton/software-factory",
+  "homepage": "https://github.com/mckinleybmelton/software-factory"
+}

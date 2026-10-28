@@ -8,7 +8,7 @@ Requires the Atlassian connector tools (see `account` MCP connection). If those 
 
 ## Procedure
 
-1. Confirm the PRD passes `draft-prd/references/prd-contract.md`.
+1. Confirm the PRD passes the contract in the `draft-prd` skill's `references/prd-contract.md`.
 2. Read the ticket (key from the orchestrator message).
 3. Add a comment with the rendered PRD markdown (`## PRD` … sections).
 4. Update factory stage labels:

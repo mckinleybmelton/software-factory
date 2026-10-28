@@ -15,6 +15,8 @@ Factory conventions only. Skills load on demand — never paste skill bodies int
 
 Specialists return to the orchestrator; they do not call each other.
 
+Runtime stays these six peers under `agents/`. Shareable packages live in `packages/` (`defineExtension`); Cursor adapter in `plugins/software-factory`; consumer template in `examples/app-host/`.
+
 ## Stage labels
 
 Exactly one factory stage label on the ticket:
