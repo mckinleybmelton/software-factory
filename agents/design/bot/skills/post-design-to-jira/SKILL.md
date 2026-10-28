@@ -4,7 +4,7 @@ description: Use when posting a completed design artifact to a Jira ticket and m
 
 # Post design to Jira
 
-Requires the Atlassian connector tools (see `account` MCP connection). If those tools are unavailable, return the design body and state that OAuth/auth is required — do not invent a successful post.
+Requires the Atlassian connector tools (see `account` MCP connection). If those tools are unavailable, return the design body and state that OAuth/auth is required — do **not** invent a successful post, do **not** claim `Labels: design_review` or `Stage: design_review`.
 
 You are the **only** writer of `design_review`. You never set `design_draft` (product/human owns that label before you run).
 
@@ -38,14 +38,27 @@ Stage: design_review
 Status: awaiting human design review
 ```
 
+## Reply when auth unavailable (after stage confirmed `design_draft`)
+
+```text
+Design draft ready for <KEY> (not posted)
+Stage: design_draft
+Status: design_ready_jira_auth_required
+Handoff: orchestrator
+Ticket: <KEY>
+Stage: design_draft
+Status: design_ready_jira_auth_required
+```
+
 ## Reply on abort (wrong stage / missing PRD)
+
+Do **not** add a Jira comment before aborting. Stop the procedure; no label changes.
 
 ```text
 Aborted post to <KEY>
 Reason: blocked_wrong_stage|blocked_missing_prd
-Stage: <actual stage or unknown>
 Handoff: orchestrator
 Ticket: <KEY>
-Stage: <actual stage or unknown>
-Status: blocked — not design_review; product/human must fix stage before design runs
+Stage: <actual stage on ticket, or unknown>
+Status: blocked_wrong_stage|blocked_missing_prd
 ```
