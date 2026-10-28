@@ -1,0 +1,7 @@
+node_modules/
+.agent-serve/
+memory/
+.env
+.env.local
+*.log
+.DS_Store

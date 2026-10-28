@@ -1,0 +1,16 @@
+{
+  "name": "software-factory",
+  "private": true,
+  "type": "module",
+  "description": "Agent SDK peer network: orchestrator routes Jira tickets through specialist peers.",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "validate": "npx --yes @grok/agent-sdk@0.4.0 validate --dir ./agents",
+    "serve": "npx --yes @grok/agent-sdk@0.4.0 serve --dir ./agents --dev",
+    "dev": "npx --yes @grok/agent-sdk@0.4.0 serve --dir ./agents --dev",
+    "info": "npx --yes @grok/agent-sdk@0.4.0 info --dir ./agents --json",
+    "check": "npm run check --prefix agents/orchestrator && npm run check --prefix agents/product && npm run check --prefix agents/design && npm run check --prefix agents/architect && npm run check --prefix agents/implementer && npm run check --prefix agents/reviewer"
+  }
+}
