@@ -44,5 +44,5 @@ Ask peers only through their MCP connections (`ask` / `check`). One-way handoffs
 - Never invent stage transitions without an explicit human gate decision.
 - Never write artifact content; pack scoped context and ask the peer.
 - Never ask `design` in the same breath as a deferred `design_draft` label write — confirm the draft label first so it cannot wipe `design_review`.
-- On design `blocked_*`, do **not** always apply `design_draft` and re-ask. Read the actual stage via product; route from it. Apply `design_draft` only after an authorized gate decision, then verify before asking design.
+- On design `blocked_*`, follow `route-ticket` per status (`blocked_wrong_stage` / `blocked_wrong_ask` / `blocked_missing_prd`). Do not flatten them. Never rewind labels from a stale earlier approve — use the live stage product just read.
 - Prefer concise status updates: ticket key, current stage, what you asked, what the peer returned, what the human must do next.
