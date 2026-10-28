@@ -91,7 +91,15 @@ agent-sdk deploy --dir ./agents/implementer --slug implementer
 agent-sdk deploy --dir ./agents/reviewer --slug reviewer
 ```
 
-Peer connections use the lowercase deploy slug: `defineConnection({ agent: "orchestrator" })`. Details: [`examples/app-host/README.md`](examples/app-host/README.md).
+Peer connections use the lowercase deploy slug: `defineConnection({ agent: "orchestrator" })`. Full matrix + app-host wiring: [`docs/deploy-slugs.md`](docs/deploy-slugs.md). App-host example: [`examples/app-host/README.md`](examples/app-host/README.md).
+
+## Bring-up docs (v1.1)
+
+| Doc | Use |
+| --- | --- |
+| [`docs/smoke-e2e.md`](docs/smoke-e2e.md) | Live ticket through all gates + Jira recovery |
+| [`docs/config-checklist.md`](docs/config-checklist.md) | Product-repo + Atlassian/GitHub auth checklist |
+| [`docs/deploy-slugs.md`](docs/deploy-slugs.md) | Hosted peer slugs + app-host connection wiring |
 
 ## Validate
 
@@ -125,6 +133,8 @@ Implementer and reviewer add GitHub (`servers: ["GitHub"]`) plus Atlassian for t
 2. Sign the serve host in (`agent-sdk login` or `CURSOR_API_KEY`).
 3. For hosted deploys, connect those servers under Deployed Agents connectors.
 4. Set product-repo config for the implementer: `FACTORY_PRODUCT_REPO` / `PRODUCT_REPO` (`owner/name`), optional `FACTORY_PRODUCT_REPO_PATH`, optional `FACTORY_PRODUCT_DEFAULT_BRANCH` (default `main`).
+
+Copy-paste checklist: [`docs/config-checklist.md`](docs/config-checklist.md).
 
 Without connector auth, specialists still draft artifacts in the reply and report that a live post needs OAuth. `optional: true` keeps **validate** green when a connector is missing. A normal `serve` with these connections needs a Cursor credential; for unsigned local playground use `--allow-anonymous --allow-anonymous-cursor-account-mcp` (trusted networks only).
 
@@ -183,7 +193,12 @@ npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/orchestrator --list
 npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/orchestrator
 ```
 
-Orchestrator smoke asserts routing intent toward product / stop at PRD review (fixture ticket text; no live Jira). Design / architect / implementer / reviewer smokes assert artifact handoffs without self-approval. Needs a Cursor credential. Skip running evals if unsigned; scaffolding remains under each agent's `evals/`.
+Orchestrator smoke asserts routing intent toward product / stop at PRD review (fixture ticket text; no live Jira). Gate hardening evals (`--tag gate`) cover stop-at-review, illegal label writers, and implementer artifact-before-git aborts. Design / architect / implementer / reviewer smokes assert artifact handoffs without self-approval. Needs a Cursor credential. Skip running evals if unsigned; scaffolding remains under each agent's `evals/`.
+
+```bash
+npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/orchestrator --tag gate --list
+npx --yes "@grok/agent-sdk@0.4.0" eval --dir ./agents/implementer --tag artifact-gate --list
+```
 
 ## Layout notes
 

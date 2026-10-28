@@ -77,6 +77,11 @@ defineConnection({ agent: "orchestrator", description: "Factory orchestrator" })
 
 Override with `FACTORY_ORCHESTRATOR_SLUG` when the slug differs. Orchestrator peers to specialists the same way (`product`, `design`, …).
 
+Canonical slug table, connector attach order, and connection matrix:
+[`docs/deploy-slugs.md`](../../docs/deploy-slugs.md). Product-repo / auth checklist:
+[`docs/config-checklist.md`](../../docs/config-checklist.md). Live smoke:
+[`docs/smoke-e2e.md`](../../docs/smoke-e2e.md).
+
 ## Env
 
 | Variable | Role |
