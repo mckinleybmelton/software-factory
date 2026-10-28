@@ -12,7 +12,7 @@ If the ask is a stage lookup, label-only update, backlog triage, or anything oth
 
 ### UX draft / post (only when stage is already `design_draft`)
 
-1. Confirm the ticket stage is already **`design_draft`** (from the orchestrator message and/or Jira). If it is not, do **not** draft or post; use the abort handoff with the actual stage and status `blocked_wrong_stage` (product/human applies `design_draft`).
+1. Confirm the ticket stage is already **`design_draft`** (from the orchestrator message and/or Jira). If it is not, do **not** draft or post; use the abort handoff with the **actual** stage and status `blocked_wrong_stage`. Do **not** tell anyone to force-apply `design_draft` — the orchestrator routes from the real stage (and only applies `design_draft` after an authorized gate decision + verify).
 2. Read the **approved PRD** from the ticket context (orchestrator message and/or Jira comments). Do not invent a new product scope.
 3. Load skill `draft-design` and fill every required field: user flows and screens/interfaces.
 4. Load skill `post-design-to-jira` to post the design artifact and move the stage label to `design_review`. You are the **only** writer of `design_review`. Never set or re-apply `design_draft`. If that skill aborts, propagate its abort handoff — do not upgrade status to `design_review`.

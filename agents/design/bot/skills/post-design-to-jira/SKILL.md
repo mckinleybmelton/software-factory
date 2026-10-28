@@ -12,7 +12,7 @@ You are the **only** writer of `design_review`. You never set `design_draft` (pr
 
 1. Confirm the design passes `draft-design/references/design-contract.md`.
 2. Read the ticket (key from the orchestrator message). Confirm current factory stage is already **`design_draft`**.
-   - If it is **not** (missing, still `prd_review`, already `design_review`, or another stage): **abort** — do **not** add a comment, do **not** change labels, do **not** claim `design_review`. Hand back with status `blocked_wrong_stage`, report the actual stage found, and say product/human must set `design_draft` first. Stop here.
+   - If it is **not** (missing, still `prd_review`, already `design_review`, or another stage): **abort** — do **not** add a comment, do **not** change labels, do **not** claim `design_review`. Hand back with status `blocked_wrong_stage` and the **actual** stage found. Do **not** instruct applying `design_draft` (that can skip `prd_review` or rewind a later stage). Orchestrator must re-route from the real stage. Stop here.
 3. Confirm a PRD is present (comment or description). If missing and the orchestrator did not supply the approved PRD in the message: **abort** — no comment, no label change; hand back with status `blocked_missing_prd` and the current stage (`design_draft`). Stop here.
 4. Add a comment with the rendered design markdown (`## Design` … sections).
 5. Update factory stage labels **only** in this transition:

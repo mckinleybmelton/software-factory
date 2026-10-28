@@ -42,9 +42,12 @@ Do **not** send generic Jira reads or label updates to `design`. Design is not a
 5. After the peer returns, report status:
    - Product success (PRD post) → expect `prd_review` and **stop** for human review.
    - Design success → expect `design_review` and **stop** for human review.
-   - Design **abort** / `blocked_*` (wrong stage, wrong ask, missing PRD) → do **not** treat as `design_review`. Fix stage via product/human, then re-ask design.
+   - Design **abort** / `blocked_*` → do **not** treat as `design_review`. Do **not** blindly apply `design_draft` or immediately re-ask design. Handle by status:
+     - `blocked_wrong_stage`: have **product** read the actual stage. Route from that stage (human `*_review` gates → stop; other drafts → matching peer). Apply `design_draft` **only** when a human gate decision already authorized that transition (PRD approve or design reject); then **verify** the label landed before asking design.
+     - `blocked_wrong_ask`: ask **product** (or human) for the Jira read/label work; no stage change; do not re-ask design.
+     - `blocked_missing_prd`: stay on current stage (expect `design_draft`); supply the approved PRD (or have product fetch it); **verify** stage is still `design_draft`, then re-ask design. Do not rewrite labels.
    - Design `design_ready_jira_auth_required` → stage remains `design_draft`; do not open the human design gate until a real post sets `design_review`.
-6. On reject (via `record-gate-decision`), product/human returns stage to the draft label; **verify** that draft label, then re-ask that peer with the rejection notes.
+6. On reject (via `record-gate-decision`), product/human returns stage to the draft label; **verify** that draft label, then re-ask that peer with the rejection notes. Never race a deferred draft-label write against a specialist post.
 
 ## Peer ask shapes
 
