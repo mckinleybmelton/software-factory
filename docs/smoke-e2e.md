@@ -6,13 +6,26 @@ will exercise.
 
 ## Preconditions
 
+Fast path (install → validate → `.env.factory` → login → serve):
+
+```bash
+./scripts/setup-factory.sh --product-repo owner/name --login --serve
+```
+
+Then connect **Atlassian** + **GitHub** once in the Cursor dashboard if you have
+not already. See [config-checklist.md](./config-checklist.md).
+
+Manual equivalent:
+
 1. Node 22.13+; from repo root: `npm install` (or per-agent installs).
 2. Sign in: `npx --yes "@grok/agent-sdk@0.4.0" login` (or `CURSOR_API_KEY`).
 3. Connect **Atlassian** (and **GitHub** before the implementer step) in the
    Cursor dashboard MCP connectors — or Deployed Agents connectors for hosted
    slugs. See [config-checklist.md](./config-checklist.md).
-4. Set product-repo env for implementer (`FACTORY_PRODUCT_REPO` / `PRODUCT_REPO`).
-5. Serve peers: `npx --yes "@grok/agent-sdk@0.4.0" serve --dir ./agents --dev`
+4. Set product-repo env for implementer (`FACTORY_PRODUCT_REPO` / `PRODUCT_REPO`),
+   or rely on `.env.factory` from `setup-factory.sh` + `serve-factory.sh`.
+5. Serve peers: `./scripts/serve-factory.sh` (or
+   `npx --yes "@grok/agent-sdk@0.4.0" serve --dir ./agents --dev`)
 6. Talk **only** to the orchestrator playground:
    `http://127.0.0.1:3000/orchestrator/playground`
 

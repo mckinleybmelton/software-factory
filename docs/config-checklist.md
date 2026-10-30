@@ -3,6 +3,21 @@
 Copy-paste checklist for bring-up. No new agents — configure the existing six
 peers and (optionally) an app-host.
 
+## 0. One-command setup (recommended)
+
+From a factory checkout, this covers runtime install, validate, `.env.factory`
+product-repo config, optional login, and optional serve:
+
+```bash
+./scripts/setup-factory.sh --product-repo owner/name --login --serve
+# optional: --product-path ../your-app --jira-project KEY
+# later:    ./scripts/serve-factory.sh
+```
+
+Still required once (dashboard): Atlassian + GitHub MCP connectors (step 3).
+After serve: create a `prd_draft` ticket and talk to the orchestrator
+([smoke-e2e.md](./smoke-e2e.md)).
+
 ## 1. Runtime
 
 ```bash
@@ -15,6 +30,8 @@ npm install
 
 npx --yes "@grok/agent-sdk@0.4.0" validate --dir ./agents
 ```
+
+Or use `./scripts/setup-factory.sh` (section 0) instead of steps 1–2 / 4 / 7.
 
 ## 2. Cursor credential (model turns + account MCP)
 

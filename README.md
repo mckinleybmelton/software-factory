@@ -17,6 +17,19 @@ Requires **Node 22.13+** (never Bun). Packaging adds install surfaces; it does *
 
 ### GitHub clone (serve the peer network)
 
+**One-command setup** (install → validate → write product-repo env → optional login/serve):
+
+```bash
+git clone https://github.com/mckinleybmelton/software-factory.git
+cd software-factory
+./scripts/setup-factory.sh --product-repo YOUR_ORG/YOUR_APP --login --serve
+# or: npm run setup -- --product-repo YOUR_ORG/YOUR_APP --login --serve
+```
+
+Optional: `--product-path ../YOUR_APP`, `--jira-project KEY`. Re-serve later with `./scripts/serve-factory.sh` (loads `.env.factory`). Connect **Atlassian** + **GitHub** once in the Cursor dashboard (script prints the checklist; OAuth cannot be automated). Then open `http://127.0.0.1:3000/orchestrator/playground` and follow [`docs/smoke-e2e.md`](docs/smoke-e2e.md).
+
+Manual equivalent:
+
 ```bash
 git clone https://github.com/mckinleybmelton/software-factory.git
 cd software-factory
@@ -95,8 +108,10 @@ Peer connections use the lowercase deploy slug: `defineConnection({ agent: "orch
 
 ## Bring-up docs (v1.1)
 
-| Doc | Use |
+| Doc / script | Use |
 | --- | --- |
+| [`scripts/setup-factory.sh`](scripts/setup-factory.sh) | One-command setup through serve |
+| [`scripts/serve-factory.sh`](scripts/serve-factory.sh) | Re-serve using `.env.factory` |
 | [`docs/smoke-e2e.md`](docs/smoke-e2e.md) | Live ticket through all gates + Jira recovery |
 | [`docs/config-checklist.md`](docs/config-checklist.md) | Product-repo + Atlassian/GitHub auth checklist |
 | [`docs/deploy-slugs.md`](docs/deploy-slugs.md) | Hosted peer slugs + app-host connection wiring |

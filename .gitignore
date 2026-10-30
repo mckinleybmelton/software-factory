@@ -3,5 +3,6 @@ node_modules/
 memory/
 .env
 .env.local
+.env.factory
 *.log
 .DS_Store
