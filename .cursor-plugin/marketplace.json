@@ -1,0 +1,24 @@
+{
+  "name": "software-factory",
+  "owner": {
+    "name": "mckinleybmelton"
+  },
+  "metadata": {
+    "description": "Software factory Cursor plugin: route a Jira ticket from PRD through PR review.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "software-factory",
+      "source": "plugins/software-factory",
+      "description": "Software factory stubs: route PRD → design → architecture → implement → review via the Agent SDK peer network.",
+      "version": "0.1.0",
+      "author": {
+        "name": "software-factory"
+      },
+      "homepage": "https://github.com/mckinleybmelton/software-factory",
+      "repository": "https://github.com/mckinleybmelton/software-factory",
+      "keywords": ["software-factory", "jira", "prd", "agents"]
+    }
+  ]
+}
