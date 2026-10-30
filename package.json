@@ -12,6 +12,8 @@
     "examples/*"
   ],
   "scripts": {
+    "setup": "./scripts/setup-factory.sh",
+    "serve:factory": "./scripts/serve-factory.sh",
     "validate": "npx --yes @grok/agent-sdk@0.4.0 validate --dir ./agents && npx --yes @grok/agent-sdk@0.4.0 validate --dir ./examples/app-host",
     "serve": "npx --yes @grok/agent-sdk@0.4.0 serve --dir ./agents --dev",
     "dev": "npx --yes @grok/agent-sdk@0.4.0 serve --dir ./agents --dev",
