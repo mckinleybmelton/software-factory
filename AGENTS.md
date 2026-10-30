@@ -31,7 +31,8 @@ Workspace `AGENTS.md` → agent `bot/instructions.md` → skills → `references
 
 Use Node.js 22.13 or newer. Do not use Bun.
 
-- Install from the repo root with `npm ci`. Workspaces cover `packages/*`, `agents/*`, and `examples/*`.
+- Install from the repo root with `./scripts/install-env.sh` (`npm ci` for `packages/*`, `agents/*`, and `examples/*`).
+- Boot the peer network with `./scripts/setup-env.sh`.
 - `npm run validate` checks every peer and `examples/app-host`. `npm run check` runs `tsc --noEmit` for the same set. Both commands complete without a Cursor API key.
 - The peer network listens on `127.0.0.1:3000`. Health is `http://127.0.0.1:3000/v1/health` (six slugs). The host index is `http://127.0.0.1:3000/`. The orchestrator playground is `http://127.0.0.1:3000/orchestrator/playground`.
 - Unsigned local serve uses `--allow-anonymous --allow-anonymous-cursor-account-mcp`. `run`, `eval`, and `chat` need `CURSOR_API_KEY` or `agent-sdk login`. Skip those when unsigned. Atlassian and GitHub connectors stay optional for validate.
